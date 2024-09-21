@@ -169,7 +169,7 @@ class ParseState:
 
 def create_world(filename):
     w = World()
-    predicateRegex = re.compile('(!?[A-Z][a-zA-Z_]*) *\( *([a-zA-Z0-9_, ]+) *\)')
+    predicateRegex = re.compile(r'(!?[A-Z][a-zA-Z_]*) *\( *([a-zA-Z0-9_, ]+) *\)')
     initialStateRegex = re.compile('init(ial state)?:', re.IGNORECASE)
     goalStateRegex = re.compile('goal( state)?:', re.IGNORECASE)
     actionStateRegex = re.compile('actions:', re.IGNORECASE)
@@ -335,7 +335,7 @@ def create_world(filename):
 
                 pstate = ParseState.ACTION_DECLARATION
 
-    for k, v in w.actions.iteritems():
+    for k, v in w.actions.items():
         v.generate_groundings(w)
 
     return w
@@ -541,7 +541,7 @@ def precondition_reachable(world, pre):
     if pre.reached(world):
         return True
 
-    for key,action in world.actions.iteritems():
+    for key,action in world.actions.items():
         for ground in action.grounds:
             for p in ground.post:
                 if strong_match(p, pre):
@@ -563,7 +563,7 @@ def update_state(state, post):
 # Gets all grounded actions which have a post condition that includes the goal
 def get_possible_grounds(world, goal):
     results = []
-    for key,action in world.actions.iteritems():
+    for key,action in world.actions.items():
         for ground in action.grounds:
             for p in ground.post:
                 if strong_match(p, goal):

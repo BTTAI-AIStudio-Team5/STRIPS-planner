@@ -38,7 +38,7 @@ To run the example problem, simply execute the following:
 
     python3 strips.py test_strips.txt
     
-Then test it on one of the four images (includes a mix of complicated and simple images).
+Then test it on one of the five images (includes a mix of complicated and simple images).
 
 When choosing a file to run, here is an example of how to interpret the file's name:
 c0b1m1b0.txt corresponds to the Kaggle image file titled canvas_0_banana_1_monkey_1_box_0.png. 

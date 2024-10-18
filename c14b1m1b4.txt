@@ -1,4 +1,4 @@
-Initial state: BananasAt(right_of_Box_A), MonkeyAt(center_right), Level(low), BoxAt(B), BoxAt(A), BoxNearby(Bananas, BoxAt(A), NotBlocking(Bananas))
+Initial state: MonkeyAt(left), BananasAt(right_of_Box_B), Level(low), BoxAt(B), BoxAt(A), BoxAt(D), BoxAt(C), LeftOf(B, A), LeftOf(A, D), LeftOf(D,C), RightOf(B, Bananas)
 Goal state: Have(Bananas)
 
 Actions:
@@ -23,7 +23,7 @@ Actions:
             Postconditions: BoxAt(Y), !BoxAt(X), At(Y), !At(X)
                
             // take the bananas when at a high level 
-            TakeBananasHigh(Location)
+            TakeBananas(Location)
             Preconditions:  BananasAt(Location), At(Location), Level(high)
             Postconditions: Have(Bananas)
 
@@ -31,4 +31,3 @@ Actions:
             TakeBananasLow(Location)
             Preconditions:  BananasAt(Location), At(Location), Level(low)
             Postconditions: Have(Bananas)
-

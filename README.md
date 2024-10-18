@@ -32,12 +32,21 @@ Note that the app follows a closed-world assumption; that is, any facts about th
 ## Linear Solver
 The STRIPS planner is a simple linear solver. In planning literature, this is sometimes called a total order solver since it assumes all steps can be planned one after the other with a strict ordering. It works backwards by starting at the goal state and searching for a grounded action (one with all variables replaced with literals) that will satisfy a precondition of the goal state. When it finds an acceptable action, it adds it to the plan and the newly added action becomes the new goal state. If an action is added that conflicts with another already-satisfied goal, then the clobbered goal is reintroduced and resatisfied. The algorithm keeps working backwards, stacking subgoals on top of each other via a depth-first search until it either satisfies all the goals or exhausts all possible plans and gives up.
 
-## Running the example
+## BTAI: Running the Example 
+
 To run the example problem, simply execute the following:
 
-    python strips.py test_strips.txt
+    python3 strips.py test_strips.txt
+    
+Then test it on one of the four images (includes a mix of complicated and simple images).
 
-The app should read in the test file and find a plan that enables the monkey to grab the bananas.
+When choosing a file to run, here is an example of how to interpret the file's name:
+c0b1m1b0.txt corresponds to the Kaggle image file titled canvas_0_banana_1_monkey_1_box_0.png. 
+
+Note that for notation like LeftOf(A, B), that means Box B is to the left of Box B. Left, right, and other directons are determined through the perspective of the monkey. So, if Box A is to to the left on my screen, it's to the right for the monkey in the image. Hence, in our txt files, we say Box A is to the right.
+
+
+
 
 
 

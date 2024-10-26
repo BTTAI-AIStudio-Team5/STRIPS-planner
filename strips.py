@@ -1,6 +1,7 @@
 import fileinput
 import re
 import sys
+import time 
 
 def join_list(l):
     return ", ".join([str(s) for s in l])
@@ -354,6 +355,7 @@ def linear_solver(world):
     return linear_solver_helper(world, state, goals, [])
 
 def linear_solver_helper(world, state, goals, current_plan, depth = 0):
+    start_time = time.time() # debug 
     padding = "".join(["++" for x in range(0,len(current_plan))]) + " "
     plan = []
 
@@ -367,36 +369,40 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
     if len(goals) == 0:
         return plan
 
-    if depth > 15:
+    if depth > 15: # debug, limit excess recursions 
         return None
 
     i = 0
     while i < len(goals):
-        goal = goals[i]
+        goal_start_time = time.time() # debug 
+        goal = goals[i] 
 
         if debug:
             print(padding + "Current Plan: {0}".format(" -> ".join([x.simple_str() for x in current_plan])))
             print(padding + "Subgoal: {0}".format(goal))
             print(padding + "Other Goals: {0}".format(", ".join([str(x) for x in goals[i+1:]])))
             print(padding + "State: {0}".format(", ".join([str(s) for s in state])))
-            raw_input("")
+            # input("")
 
         if satisfied(state, goal):
             # recurse
             if debug:
-                raw_input(padding + "Satisfied already")
+                input(padding + "Satisfied already")
                 print("")
+            print(f"Time taken for goal {i}: {time.time() - goal_start_time} seconds") # debug
             i += 1
             continue
         
+        get_possible_start_time = time.time() # debug 
         possible_actions = sorted(get_possible_grounds(world, goal), key=lambda c: initial_state_distance(state, c.pre))
+        print(f"Time for get_possible_grounds: {time.time() - get_possible_start_time} seconds") # debug
 
         # otherwise, we need to find a subgoal that will get us to the goal
         # find all the grounded actions which will satisfy the goal
         if debug:
             print(padding + "List of possible actions that satisfy {0}:".format(goal))
             print("\n".join([padding + x.simple_str() for x in possible_actions]))
-            raw_input("")
+            # input("")
 
         found = False
 
@@ -405,26 +411,26 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
             if debug:
                 print(padding + "Trying next action to satisfy {0}:".format(goal))
                 print(padding + str(action).replace("\n", "\n" + padding))
-                raw_input("")
+                # input("")
 
             # check if there is at least 1 action for each precondition which satisfies it
             if not preconditions_reachable(world, action):
                 if debug:
                     print(padding + "Some preconditions not reachable by any possible action. Skipping...")
-                    raw_input("")
+                    # input("")
                 continue
             
             # check if the action directly contradicts another goal
             if contains_contradiction(goals, action):
                 if debug:
                     print(padding + "Action violates another goal state. Skipping...")
-                    raw_input("")
+                    # input("")
                 continue
             
             # if we can't obviously reject it as unreachable, we have to recursively descend.
             if debug:
                 print(padding + "Action cannot be trivially rejected as unreachable. Descending...")
-                raw_input("")
+                # input("")
 
             temp_state = list(state)
 
@@ -432,7 +438,9 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
 
             current_plan.append(action)
 
+            recursive_start_time = time.time()
             solution = linear_solver_helper(world, temp_state, subgoals, current_plan, depth = depth + 1)
+            print(f"Time for recursive call: {time.time() - recursive_start_time} seconds")
 
             # we were unable to find 
             if solution is None:
@@ -443,7 +451,7 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
 
             if debug:
                 print(padding + "Possible solution found!")
-                raw_input("")
+                # input("")
 
             
             # update the state to incorporate the post conditions of our selected action
@@ -466,13 +474,13 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
                 if debug:
                     print(padding + "Path satisfies {0} but clobbers other goals: {1}".format(goal, ", ".join([str(x) for x in clobbered])))
                     print(padding + "Re-adding the clobbered goals to the end of the list")
-                    raw_input("")
+                    # input("")
                 [goals.remove(x) for x in clobbered]
                 [goals.append(x) for x in clobbered]
                 i -= clob_len
                 if debug:    
                     print(padding + "New goals: {0}".format(", ".join([str(x) for x in goals])))
-                    raw_input("")
+                    # input("")
                 
 
             # add the subplan to the plan
@@ -488,7 +496,7 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
             
             if debug:
                 print(padding + "New State: " + ", ".join([str(x) for x in state]))
-                raw_input("")
+                # input("")
 
             i += 1
             found = True
@@ -497,8 +505,8 @@ def linear_solver_helper(world, state, goals, current_plan, depth = 0):
         if not found:
             if debug:
                 print("")
-                raw_input("++" + padding + "No actions found to satisfy this subgoal. Backtracking...")
-                print =("")
+                # input("++" + padding + "No actions found to satisfy this subgoal. Backtracking...")
+                print("")
             #current_plan.pop()
             return None
 
@@ -565,10 +573,15 @@ def get_possible_grounds(world, goal):
     results = []
     for key,action in world.actions.items():
         for ground in action.grounds:
+            # for p in ground.post:
+                # if strong_match(p, goal):
+                    # results.append(ground)
+                    # break
             for p in ground.post:
                 if strong_match(p, goal):
                     results.append(ground)
                     break
+
     return results
 
 def print_plan(plan):

@@ -1,4 +1,4 @@
-Initial state: BananasAt(right), MonkeyAt(center_right), Level(low)
+Initial state: BananasAt(right), At(center_right), Level(low)
 Goal state: Have(Bananas)
 
 Actions:
@@ -6,22 +6,22 @@ Actions:
             Move(X, Y)
             Preconditions:  At(X), Level(low)
             Postconditions: !At(X), At(Y)
-               
+
             // climb up on the box
             ClimbUp(Location)
             Preconditions:  At(Location), BoxAt(Location), Level(low)
             Postconditions: Level(high), !Level(low)
-               
+
             // climb down from the box
             ClimbDown(Location)
             Preconditions:  At(Location), BoxAt(Location), Level(high)
             Postconditions: Level(low), !Level(high)
-               
+
             // move monkey and box from X to Y
             MoveBox(X, Y)
             Preconditions:  At(X), BoxAt(X), Level(low)
             Postconditions: BoxAt(Y), !BoxAt(X), At(Y), !At(X)
-               
+
             // take the bananas when at a high level 
             TakeBananas(Location)
             Preconditions:  BananasAt(Location), At(Location), Level(high)
@@ -31,3 +31,4 @@ Actions:
             TakeBananasLow(Location)
             Preconditions:  BananasAt(Location), At(Location), Level(low)
             Postconditions: Have(Bananas)
+ 

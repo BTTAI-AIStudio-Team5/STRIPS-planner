@@ -1,4 +1,4 @@
-Initial state: BananasAt(right), At(center_right), Level(low)
+Initial state: At(right), BananasAt(right), Level(low)
 Goal state: Have(Bananas)
 
 Actions:

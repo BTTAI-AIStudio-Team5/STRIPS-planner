@@ -1,5 +1,5 @@
-Initial state: At(left_of_Box_C), BananasAt(between_Box_C_and_Box_B), BananasAt(right_of_Box_A), Level(low), BoxAt(A), BoxAt(B), BoxAt(C), LeftOf(B, A), LeftOf(C, B), LeftOf(Monkey, C)
-Goal state: Have(Bananas) 
+Initial state: At(left_of_Box_C), BananasAt(right_of_Box_A), BananasAt(between_Box_C_and_Box_B), BoxAt(A), BoxAt(B), BoxAt(C), Level(low), RightOf(Bananas, A), RightOf(A, B), RightOf(B, Bananas) RightOf(Bananas, C)
+Goal state: Have(Bananas)
 
 Actions:
             // move from X to Y

@@ -1,4 +1,4 @@
-Initial state: At(left), BananasAt(right_of_Box_B), Level(low), BoxAt(B), BoxAt(A), BoxAt(D), BoxAt(C), LeftOf(B, A), LeftOf(A, D), LeftOf(D,C), RightOf(B, Bananas)
+Initial state: At(left_of_Box_C), BananasAt(right_of_Box_B), BoxAt(B), BoxAt(A), BoxAt(D), BoxAt(C), Level(low), RightOf(Bananas, B), RightOf(B, A), RightOf(A, D), RightOf(D,C), RightOf(C, Monkey)
 Goal state: Have(Bananas)
 
 Actions:

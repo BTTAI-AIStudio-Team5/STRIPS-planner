@@ -1,4 +1,4 @@
-Initial state: BananasAt(right_of_Box_A), At(center_right), Level(low), BoxAt(B), BoxAt(A), BoxNearby(Bananas, BoxAt(A), NotBlocking(Bananas))
+Initial state: At(left_of_Box_B), BananasAt(right_of_Box_A), BoxAt(B), BoxAt(A), Level(low), RightOf(Bananas, A), RightOf(B, Bananas)
 Goal state: Have(Bananas)
 
 Actions:

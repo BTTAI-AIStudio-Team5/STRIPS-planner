@@ -23,7 +23,7 @@ Actions:
             Postconditions: BoxAt(Y), !BoxAt(X), At(Y), !At(X)
 
             // take the bananas when at a high level 
-            TakeBananas(Location)
+            TakeBananasHigh(Location)
             Preconditions:  BananasAt(Location), At(Location), Level(high)
             Postconditions: Have(Bananas)
 

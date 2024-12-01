@@ -118,20 +118,30 @@ class Action:
         self.params = params
         self.pre = preconditions
         self.post = postconditions
+        
     def generate_groundings(self, world):
         self.grounds = []
         cur_literals = []
         self.groundings_helper(world.known_literals, cur_literals, self.grounds)
+        
     def groundings_helper(self, all_literals, cur_literals, g):
         if len(cur_literals) == len(self.params):
             args_map = dict(zip(self.params, cur_literals))
             grounded_pre = [p.ground(args_map) for p in self.pre]
             grounded_post = [p.ground(args_map) for p in self.post]
+            
+            # Filter invalid groundings
+            if self.name in {"Move", "MoveBox"}:
+                if "low" in cur_literals or "high" in cur_literals:
+                    return  # Skip invalid groundings
+            
             g.append(GroundedAction(self, cur_literals, grounded_pre, grounded_post))
             return
+        
         for literal in all_literals:
             if literal not in cur_literals:
                 self.groundings_helper(all_literals, cur_literals + [ literal ], g)
+                
     def print_grounds(self):
         i = 0
         for g in self.grounds:
@@ -139,6 +149,7 @@ class Action:
             print(g)
             print("")
             i = i + 1
+            
     def __str__(self):
         return "{0}({1})\nPre: {2}\nPost: {3}".format(self.name, join_list(self.params), join_list(self.pre), join_list(self.post))
 
@@ -520,11 +531,42 @@ def contains_contradiction(state, action):
     return False
 
 
-def initial_state_distance(state, preconds):
+""" def initial_state_distance(state, preconds):
     count = 0
+    
     for p in preconds:
         if not satisfied(state, p):
+            # Prioritize ClimbDown if low-level is required
+            if p.predicate == "Level" and p.literals == ("low",):
+                return -100  # High priority for ClimbDown
             count += 1
+    return count
+ """
+ 
+def initial_state_distance(state, preconds):
+    count = 0
+
+    # Identify all the locations the agent has been to from the current state
+    visited_locations = {cond.literals for cond in state if cond.predicate == "At"}
+
+    for p in preconds:
+        if not satisfied(state, p):  # Check if the precondition is not already satisfied
+            # Prioritize "ClimbDown" if low-level is required
+            if p.predicate == "Level" and p.literals == ("low",):
+                count -= 100  # High priority for ClimbDown
+            
+            # Penalize redundant moves to already visited locations
+            elif p.predicate == "At" and p.literals in visited_locations:
+                count += 10  # Penalize redundant moves
+            
+            # Regular cost for moving to a new, unvisited location
+            elif p.predicate == "At":
+                count += 1
+            
+            # Default penalty for any other preconditions
+            else:
+                count += 1
+
     return count
 
 def satisfied(state, goal):
@@ -587,6 +629,47 @@ def get_possible_grounds(world, goal):
 def print_plan(plan):
     print("Plan: {0}".format(" -> ".join([x.simple_str() for x in plan])))
 
+def main():
+    w = create_world(None)
+
+    already_solved = w.goal_reached()
+    print("Goal already solved? {0}".format(already_solved))
+
+    if not already_solved:
+        print("Solving...")
+        
+        num_runs = 10  # Number of times to run the planner
+        solutions = []
+        shortest_plan = None
+        shortest_length = float('inf')  # Track the shortest plan length
+        
+        for i in range(num_runs):
+            print(f"Run {i + 1}/{num_runs}...")
+            solution = linear_solver(w)
+            
+            if solution is not None:
+                plan_length = len(solution)
+                print(f"Found a solution of length {plan_length}")
+                solutions.append(solution)
+                
+                # Check if this is the shortest plan
+                if plan_length < shortest_length:
+                    shortest_plan = solution
+                    shortest_length = plan_length
+                
+                # Break early if the solution length <= 2
+                if plan_length <= 2:  # Adjust this threshold if needed
+                    print(f"Early exit: Found optimal plan of length {plan_length}")
+                    break
+        
+        if not solutions:
+            print("No solution found :(")
+        else:
+            # If an early exit didn't occur, choose the shortest plan
+            best_solution = shortest_plan if shortest_plan else min(solutions, key=len)
+            print("Solved!")
+            print("Best plan:")
+            print_plan(best_solution)
 
 def main():
     w = create_world(None)
@@ -604,7 +687,7 @@ def main():
             print("Solved!")
             print_plan(solution)
             #from show_strips import show_solution
-            #show_solution(solution)
+            #show_solution(solution) """
 
 if __name__ == "__main__":
     main()
